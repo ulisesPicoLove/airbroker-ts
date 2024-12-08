@@ -1,38 +1,65 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { connectMongo } from "@/lib/db/mongoose";
 import User from "@/lib/models/user";
 import { apiAirsite } from "@/lib/api";
 
-type Credentials {
+type Credentials = {
   email: string;
   password: string;
+};
+
+type Credenciales = {
+  username: string;
+  password: string;
+};
+
+type ExtendedUser = Credentials & {
+  name: string;
+  apiToken: string;
+};
+
+declare module "next-auth" {
+  interface Session {
+    name?: string;
+    username?: string;
+    email?: string;
+    airtoken?: string;
+  }
+
+  interface JWT {
+    name?: string;
+    username?: string;
+    email?: string;
+    airtoken?: string;
+  }
 }
 
-type ExtendedUser = {
-  name: string,
-  username: string,
-  apiToken: string,
-}
-
-export const authOptions = {
+export const authOptions: AuthOptions = {
   providers: [
     Credentials({
       name: "Credentials",
-      async authorize(credentials: Credentials | undefined) {
+      credentials: {
+        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        password: { label: "Password", type: "password" },
+        name: { label: "Username", type: "text", placeholder: "jsmith" },
+        apiToken: { label: "Username", type: "text", placeholder: "jsmith" },
+        // email: { label: "email", type: "email" },
+      },
+      async authorize(credentials: ) {
         if (!credentials) return null;
         await connectMongo();
-        const user = await User.findOne({ email: credentials.email });
+        const user = await User.findOne({ email: (await credentials).email });
 
         if (!user) return null;
 
-        const isMatch = await user.matchPassword(credentials.password);
+        const isMatch = await user.matchPassword((await credentials).password);
 
         if (!isMatch) return null;
 
         const apiToken = await apiAirsite.post("/login", {
-          email: credentials.email,
-          password: credentials.password,
+          email: (await credentials).email,
+          password: (await credentials).password,
         });
 
         if (apiToken.status !== 200 && apiToken.status !== 201) return null;

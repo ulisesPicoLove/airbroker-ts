@@ -3,9 +3,6 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 import {
   Calendar,
-  Home,
-  Inbox,
-  Search,
   Settings,
   LayoutDashboard,
   Hospital,
@@ -15,6 +12,7 @@ import {
   CreditCard,
   Bell,
   LogOut,
+  Inbox
 } from "lucide-react";
 
 import {
@@ -22,7 +20,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -83,11 +80,11 @@ const items: MenuItem[] = [
 ];
 
 type AppSidebarProps = {
-  name: string;
-  email: string;
+  name: string | undefined;
+  email: string | undefined;
 };
 
-export function AppSidebar({ name, email }: AppSidebarProps) {
+export function AppSidebar({ name="No hay", email="No hay" }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>

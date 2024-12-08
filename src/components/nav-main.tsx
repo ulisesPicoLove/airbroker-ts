@@ -18,6 +18,13 @@ type MenuItem = {
   title: string;
   url: string;
   icon: React.ElementType; // O React.ComponentType si el componente espera props
+  isActive: boolean;
+  items: [
+    {
+      title: string;
+      url: string;
+    },
+  ];
 };
 
 type ItemsProps = {
