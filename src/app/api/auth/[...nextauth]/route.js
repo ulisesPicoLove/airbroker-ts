@@ -4,49 +4,12 @@ import { connectMongo } from "@/lib/db/mongoose";
 import User from "@/lib/models/user";
 import { apiAirsite } from "@/lib/api";
 
-type Credentials = {
-  email: string;
-  password: string;
-};
 
-type Credenciales = {
-  username: string;
-  password: string;
-};
-
-type ExtendedUser = Credentials & {
-  name: string;
-  apiToken: string;
-};
-
-declare module "next-auth" {
-  interface Session {
-    name?: string;
-    username?: string;
-    email?: string;
-    airtoken?: string;
-  }
-
-  interface JWT {
-    name?: string;
-    username?: string;
-    email?: string;
-    airtoken?: string;
-  }
-}
-
-export const authOptions: AuthOptions = {
+export const authOptions = {
   providers: [
     Credentials({
       name: "Credentials",
-      credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" },
-        name: { label: "Username", type: "text", placeholder: "jsmith" },
-        apiToken: { label: "Username", type: "text", placeholder: "jsmith" },
-        // email: { label: "email", type: "email" },
-      },
-      async authorize(credentials: ) {
+      async authorize(credentials ) {
         if (!credentials) return null;
         await connectMongo();
         const user = await User.findOne({ email: (await credentials).email });
