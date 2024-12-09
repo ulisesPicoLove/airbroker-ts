@@ -9,8 +9,8 @@ export default async function Layout({ children }: LayoutChildren) {
 
   return (
     <SidebarProvider>
-      <AppSidebar name={session?.name} email={session?.email} />
-      <main className="p-3">
+      <AppSidebar name={session?.name} email={session?.email}  />
+      <main className="w-full p-3">
         <SidebarTrigger />
         {children}
       </main>
