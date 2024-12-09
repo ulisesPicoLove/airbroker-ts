@@ -1,28 +1,26 @@
-import NextAuth, { AuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { connectMongo } from "@/lib/db/mongoose";
 import User from "@/lib/models/user";
 import { apiAirsite } from "@/lib/api";
 
-
 export const authOptions = {
   providers: [
     Credentials({
       name: "Credentials",
-      async authorize(credentials ) {
-        if (!credentials) return null;
+      async authorize(credentials) {
         await connectMongo();
-        const user = await User.findOne({ email: (await credentials).email });
+        const user = await User.findOne({ email: credentials.email });
 
         if (!user) return null;
 
-        const isMatch = await user.matchPassword((await credentials).password);
+        const isMatch = await user.matchPassword(credentials.password);
 
         if (!isMatch) return null;
 
         const apiToken = await apiAirsite.post("/login", {
-          email: (await credentials).email,
-          password: (await credentials).password,
+          email: credentials.email,
+          password: credentials.password,
         });
 
         if (apiToken.status !== 200 && apiToken.status !== 201) return null;
